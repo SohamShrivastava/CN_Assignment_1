@@ -40,7 +40,8 @@ def get_resolved_ip(header):
     if final_idx >= 0 and final_idx < len(ip_pool):
         return ip_pool[final_idx]
     else:
-        print("Index out of range")    
+        print("Index out of range") 
+        return None   
 
 def server():
     # create a tcp/ip socket
@@ -53,7 +54,7 @@ def server():
             conn, addr = s.accept()
             with conn:
                 print(f"connected by {addr}")
-                data = conn.recv(1024) # receive data from client 
+                data = conn.recv(2048) # receive data from client 
                 if not data:
                     break
                 
@@ -69,8 +70,11 @@ def server():
 
                 print(f"received query for: {domain_name}, with header: {custom_header}")
                 print(f"resolved ip: {resolved_ip}")
-                conn.sendall(resolved_ip.encode('utf-8')) #send resolved IP back to client
-                print("response sent back to client\n")
+                if resolved_ip:    
+                    conn.sendall(resolved_ip.encode('utf-8')) #send resolved IP back to client
+                    print("response sent back to client\n")
+                else:
+                    print("Failed to resolve IP\n")    
 
 if __name__ == "__main__":
     server()
