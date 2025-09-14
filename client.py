@@ -53,8 +53,11 @@ def main():
             
             dns_query_id += 1
     report_df = pd.DataFrame(results_data)
-    print("\nSummary of all queries:")
+    print("summary of queries:\n")
     print(report_df.to_string())
+
+    report_df.to_csv("dns_report.csv", index=False)
+    print("report saved as 'dns_report.csv' \n")
 
 if __name__ == "__main__":
     main()
