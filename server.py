@@ -2,7 +2,7 @@ import socket
 import json
 from scapy.all import DNS
 
-
+#server details
 host = '127.0.0.1'
 port = 12345
 
@@ -59,7 +59,7 @@ def server():
                     break
                 
                 header_bytes = data[:8] #first 8 bytes of header
-                dns_packet_bytes = data[8:] #rest is dns query
+                dns_packet_bytes = data[8:] #remaining is dns query
 
                 custom_header = header_bytes.decode('utf-8', errors='ignore')
 

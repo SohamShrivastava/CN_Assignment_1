@@ -4,15 +4,17 @@ import socket
 import pandas as pd
 
 pcap_file = "/Users/sohamshrivastava/Library/CloudStorage/OneDrive-iitgn.ac.in/Semester 5/CN/0.pcap"
+
+#server details 
 server_ip = "127.0.0.1"
 server_port = 12345
 
 def send_to_server(payload):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         try:
-            s.connect((server_ip, server_port))
-            s.sendall(payload)
-            data = s.recv(1024)
+            s.connect((server_ip, server_port)) #connect with server
+            s.sendall(payload) #send packet
+            data = s.recv(1024) #receive resolved IP
             return data.decode('utf-8', errors='ignore')
         except ConnectionRefusedError:
             print("connection to server failed.")
@@ -20,7 +22,7 @@ def send_to_server(payload):
 
 def main():
     try:
-        packets = rdpcap(pcap_file)
+        packets = rdpcap(pcap_file) #read pcap file
     except FileNotFoundError:
         print(f"pcap file '{pcap_file}' not found.")
         return
@@ -32,30 +34,33 @@ def main():
     print()
 
     for packet in packets:
+        #checking if packet is DNS query over UDP
         if packet.haslayer(DNS) and packet[DNS].qr == 0 and packet.haslayer(UDP) and packet[UDP].dport == 53:
-            now = datetime.now()
+            now = datetime.now() # current time
             hh = now.strftime("%H")
             mm = now.strftime("%M")
             ss = now.strftime("%S")
 
             id_str = f"{dns_query_id:02d}"
-            custom_header = f"{hh}{mm}{ss}{id_str}"
+            custom_header = f"{hh}{mm}{ss}{id_str}" #creating custom header
 
             header_bytes = custom_header.encode('utf-8')
-            orgnl_dns_bytes = bytes(packet[DNS])
-            payload = header_bytes + orgnl_dns_bytes
+            orgnl_dns_bytes = bytes(packet[DNS]) # original dns query bytes
+            payload = header_bytes + orgnl_dns_bytes #combine header + dns
 
-            resolved_ip = send_to_server(payload)
+            resolved_ip = send_to_server(payload) #sending to server and getting resolved IP
             if resolved_ip:
                 domain_name = packet[DNS].qd.qname.decode('utf-8', errors='ignore')
                 print(f"Query ID: {dns_query_id}, Domain: {domain_name}, Resolved IP: {resolved_ip}")
                 results_data.append({"Custom Header value (HHMMSSID)": custom_header,"Domain name": domain_name,"Resolved IP address": resolved_ip})
             
             dns_query_id += 1
+    # printing in dataframe format        
     report_df = pd.DataFrame(results_data)
     print("summary of queries:\n")
     print(report_df.to_string())
 
+    # saving in csv file
     report_df.to_csv("dns_report.csv", index=False)
     print("report saved as 'dns_report.csv' \n")
 
