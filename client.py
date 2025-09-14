@@ -3,7 +3,7 @@ from datetime import datetime
 import socket
 import pandas as pd
 
-pcap_file = "/Users/sohamshrivastava/Library/CloudStorage/OneDrive-iitgn.ac.in/Semester 5/CN/0.pcap"
+pcap_file = "0.pcap"
 
 #server details 
 server_ip = "127.0.0.1"
