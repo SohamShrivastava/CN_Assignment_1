@@ -13,15 +13,16 @@
    
    You will see like this output confirming server is running:
    
+   ```bash
    server is listening on 127.0.0.1:12345
    
 4. **Before running the client.py, make sure following variables are set properly:**
    
    a. pcap_file: Make sure you had set correct path of your input pcap file
    
-   b. server_ip: Should be set to 127.0.0.1 (for running locally)
+   b. server_ip: Should be set to 127.0.0.1 (should be same as set on client.py)
    
-   c. server_port: 12345
+   c. server_port: 12345 (same as set on client.py)
 
 5. **Run the client.py**
 
